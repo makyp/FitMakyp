@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_day_label">Mi día</string>
+    <string name="widget_day_description">Tu entreno de hoy, el agua y tu racha</string>
+    <string name="widget_pet_label">Mi mascota</string>
+    <string name="widget_pet_description">Tu mascota y tu racha de entrenos</string>
+    <string name="widget_pet_only_label">Solo mi mascota</string>
+    <string name="widget_pet_only_description">Tu mascota sola, sin texto, sobre tu fondo de pantalla</string>
+</resources>

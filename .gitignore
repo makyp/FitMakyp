@@ -1,0 +1,45 @@
+# --- Archivos personales o de trabajo que NO se suben ---
+# Documento de especificación original y notas internas
+*.docx
+PLAN_SIGUIENTE.md
+# Capturas e imágenes de referencia (pueden tener derechos de terceros)
+Captura de pantalla*.png
+*.jpg.ref
+referencias/
+
+# Instaladores ya compilados (se publican aparte, en "Releases")
+*.apk
+*.aab
+*.ipa
+
+# Claves de firma y configuración local (nunca se comparten)
+key.properties
+*.keystore
+*.jks
+local.properties
+.env
+*.env
+
+# Compilación y caches
+**/build/
+**/.dart_tool/
+**/.gradle/
+**/.cxx/
+**/__pycache__/
+*.pyc
+.flutter-plugins
+.flutter-plugins-dependencies
+**/ios/Pods/
+**/ios/.symlinks/
+**/ios/Flutter/ephemeral/
+**/linux/flutter/ephemeral/
+**/windows/flutter/ephemeral/
+**/macos/Flutter/ephemeral/
+
+# Editores y sistema
+.idea/
+*.iml
+.vscode/
+.DS_Store
+Thumbs.db
+*.log
