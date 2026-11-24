@@ -76,9 +76,10 @@ const _jacks = WarmupMove(
 const _hips = WarmupMove(
   id: 'circulos_cadera',
   name: 'Círculos de cadera',
-  seconds: 30,
+  seconds: 20,
+  perSide: true,
   region: BodyRegion.general,
-  steps: ['De pie, apóyate en una pared o silla si lo necesitas.', 'Sube una rodilla y dibuja círculos amplios hacia fuera.', 'A mitad de tiempo, cambia de pierna.'],
+  steps: ['De pie, apóyate en una pared o silla si lo necesitas.', 'Sube la rodilla y dibuja círculos amplios hacia fuera.', 'A mitad de tiempo, cambia el sentido del círculo.'],
 );
 const _armCircles = WarmupMove(
   id: 'circulos_brazos',
@@ -151,9 +152,10 @@ const _quadStretch = WarmupMove(
 const _hamStretch = WarmupMove(
   id: 'est_isquios',
   name: 'Estiramiento de isquiotibiales',
-  seconds: 40,
+  seconds: 30,
+  perSide: true,
   region: BodyRegion.lower,
-  steps: ['Sentada, una pierna estirada y la otra doblada hacia dentro.', 'Inclínate hacia la pierna estirada con la espalda larga.', 'Llega hasta notar tensión, sin rebotes.'],
+  steps: ['Sentada, estira la pierna de este lado y dobla la otra hacia dentro.', 'Inclínate hacia la pierna estirada con la espalda larga.', 'Llega hasta notar tensión, sin rebotes.'],
 );
 const _figure4 = WarmupMove(
   id: 'est_gluteo',

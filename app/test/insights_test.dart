@@ -96,7 +96,6 @@ void main() {
       waterGoal: 8,
       habitsDone: (d) => 1,
       habitsCount: 4,
-      meals: (d) => const [],
     );
     final w = weekSummary(data, mon2.add(const Duration(days: 3)));
     expect(w.monday, mon2);

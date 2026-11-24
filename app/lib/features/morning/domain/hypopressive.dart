@@ -125,7 +125,7 @@ const hypoPostures = [
       'Empuja las manos hacia el techo sin subir los hombros.',
       'Si te cansas los hombros, bájalos al frente.',
     ],
-    pose: PoseSpec(lean: 3, knees: 10, shoulder: 150, elbow: 12),
+    pose: PoseSpec(lean: 3, knees: 10, shoulder: 176, elbow: 2),
   ),
   HypoPosture(
     id: 'pared',

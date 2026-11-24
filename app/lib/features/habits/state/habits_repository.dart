@@ -1,18 +1,14 @@
 import 'package:flutter/foundation.dart';
 
 import '../../../core/models/habits.dart';
-import '../domain/hand_portions.dart';
 import '../../../core/storage/local_store.dart';
 import '../../../core/utils/format.dart';
-import '../../../core/utils/ids.dart';
 
-/// Agua, comidas y hábitos diarios.
+/// Agua y hábitos diarios.
 class HabitsRepository extends ChangeNotifier {
   HabitsRepository(this._store) {
     final w = _store.readJson(_waterKey);
     if (w is Map<String, dynamic>) _water = {for (final e in w.entries) e.key: e.value as int};
-    final m = _store.readJson(_mealsKey);
-    if (m is List) _meals = [for (final x in m) MealEntry.fromJson(x as Map<String, dynamic>)];
     final h = _store.readJson(_habitsKey);
     if (h is List) _habits = [for (final x in h) HabitDef.fromJson(x as Map<String, dynamic>)];
     final d = _store.readJson(_doneKey);
@@ -22,14 +18,12 @@ class HabitsRepository extends ChangeNotifier {
   }
 
   static const _waterKey = 'water';
-  static const _mealsKey = 'meals';
   static const _habitsKey = 'habits';
   static const _doneKey = 'habitsDone';
   static const _settingsKey = 'habitsSettings';
 
   final LocalStore _store;
   Map<String, int> _water = {};
-  List<MealEntry> _meals = [];
   List<HabitDef> _habits = List.of(defaultHabits);
   Map<String, Set<String>> _done = {};
   HabitsSettings _settings = const HabitsSettings();
@@ -46,9 +40,6 @@ class HabitsRepository extends ChangeNotifier {
   bool waterGoalMet(DateTime day) => glasses(day) >= _settings.waterGoalGlasses;
 
   /// Días en los que se cumplió la meta de agua.
-  /// Días con al menos una comida apuntada.
-  Set<DateTime> get mealDays => {for (final m in _meals) dateOnly(m.at)};
-
   Set<DateTime> get waterGoalDays => {
         for (final e in _water.entries)
           if (e.value >= _settings.waterGoalGlasses) DateTime.parse(e.key),
@@ -60,69 +51,6 @@ class HabitsRepository extends ChangeNotifier {
     notifyListeners();
     await _store.writeJson(_waterKey, _water);
   }
-
-  // ---------- Comidas ----------
-  List<MealEntry> mealsOn(DateTime day) =>
-      _meals.where((m) => dateOnly(m.at) == dateOnly(day)).toList()..sort((a, b) => a.at.compareTo(b.at));
-
-  /// Comidas con foto, de la más reciente a la más antigua.
-  List<MealEntry> get recentWithPhotos =>
-      _meals.where((m) => m.photoId != null).toList()..sort((a, b) => b.at.compareTo(a.at));
-
-  /// Fotos de comidas (para la copia de seguridad).
-  Set<String> get mealPhotoIds => {for (final m in _meals) ?m.photoId};
-
-  int kcalOn(DateTime day) => mealsOn(day).fold(0, (a, m) => a + (m.kcal ?? 0));
-  int proteinOn(DateTime day) => mealsOn(day).fold(0, (a, m) => a + (m.protein ?? 0));
-
-  /// Porciones con la mano del día (solo de las comidas registradas así).
-  HandPortions portionsOn(DateTime day) =>
-      mealsOn(day).fold(const HandPortions(), (a, m) => m.portions == null ? a : a + m.portions!);
-
-  /// Comidas distintas recientes, para repetirlas con un toque.
-  List<MealEntry> get recentMeals {
-    final seen = <String>{};
-    final out = <MealEntry>[];
-    for (final m in [..._meals]..sort((a, b) => b.at.compareTo(a.at))) {
-      if (seen.add(m.description.toLowerCase())) out.add(m);
-      if (out.length >= 8) break;
-    }
-    return out;
-  }
-
-  Future<void> saveMeal({
-    String? id,
-    required DateTime at,
-    required MealType type,
-    required String description,
-    int? kcal,
-    int? protein,
-    HandPortions? portions,
-    String? photoId,
-  }) async {
-    final meal = MealEntry(
-      id: id ?? newId('meal'),
-      at: at,
-      type: type,
-      description: description,
-      kcal: kcal,
-      protein: protein,
-      portions: portions,
-      photoId: photoId,
-    );
-    _meals.removeWhere((m) => m.id == meal.id);
-    _meals.add(meal);
-    notifyListeners();
-    await _persistMeals();
-  }
-
-  Future<void> deleteMeal(String id) async {
-    _meals.removeWhere((m) => m.id == id);
-    notifyListeners();
-    await _persistMeals();
-  }
-
-  Future<void> _persistMeals() => _store.writeJson(_mealsKey, _meals.map((m) => m.toJson()).toList());
 
   // ---------- Hábitos ----------
   List<HabitDef> get habits => List.unmodifiable(_habits);

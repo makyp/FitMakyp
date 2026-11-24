@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/theme/app_theme.dart';
+import 'body_figure.dart';
 
 /// Miniatura de ejercicio con su número de orden.
 class ExerciseThumb extends StatelessWidget {
@@ -21,6 +22,8 @@ class ExerciseThumb extends StatelessWidget {
               color: FmColors.line,
               child: src == null
                   ? const SizedBox()
+                  : src!.startsWith('figure:')
+                  ? FigureThumb(src: src!)
                   : Image.asset(
                       src!,
                       fit: BoxFit.cover,

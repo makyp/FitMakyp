@@ -1,3 +1,4 @@
+import '../../boxing/boxing_screen.dart';
 import '../../summary/month_summary_screen.dart';
 import '../../morning/ui/morning_screen.dart';
 import 'package:flutter/material.dart';
@@ -78,6 +79,15 @@ class WorkoutTabScreen extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 10),
+              Card(
+                child: ListTile(
+                  leading: const Text('🥊', style: TextStyle(fontSize: 24)),
+                  title: const Text('Boxeo para principiantes'),
+                  subtitle: const Text('Saco, técnica y pesas en rondas de 2 minutos'),
+                  trailing: const Icon(Icons.chevron_right_rounded),
+                  onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const BoxingScreen())),
+                ),
+              ),
               Card(
                 child: ListTile(
                   leading: const Text('🌅', style: TextStyle(fontSize: 24)),

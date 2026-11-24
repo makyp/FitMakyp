@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 
 import '../../core/models/exercise.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/utils/gender.dart';
+import 'body_figure.dart';
 
 /// Único lugar que sabe pintar recursos visuales de ejercicios.
 /// Para añadir GIF, vídeo, Lottie o 3D solo se toca este widget.
@@ -26,6 +28,14 @@ class ExerciseMediaView extends StatelessWidget {
       MediaKind.imagePair => _image(media.src),
       MediaKind.holdImage when animate && !reduceMotion => _HoldAnimation(src: media.src!),
       MediaKind.holdImage || MediaKind.combinedImage || MediaKind.gif => _image(media.src),
+      MediaKind.figure => Container(
+          color: FmColors.lavender.withValues(alpha: 0.5),
+          child: FigureMoveAnimation(
+            start: figurePoseOf(media.src) ?? BoxingPoses.guard,
+            end: figurePoseOf(media.endSrc) ?? figurePoseOf(media.src) ?? BoxingPoses.guard,
+            hair: context.isMan ? FigureHair.short : FigureHair.ponytail,
+          ),
+        ),
       MediaKind.video || MediaKind.none => const _Placeholder(),
     };
     return Semantics(

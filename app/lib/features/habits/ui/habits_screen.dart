@@ -6,12 +6,8 @@ import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/format.dart';
 import '../../../core/utils/ids.dart';
 import '../../../shared/widgets/common.dart';
-import '../domain/hand_portions.dart';
-import '../../../shared/widgets/progress_photo.dart';
-import 'meal_photo_diary.dart';
-import 'meal_sheet.dart';
 
-/// Agua, comidas y hábitos de un día (por defecto hoy).
+/// Agua y hábitos de un día (por defecto hoy).
 class HabitsScreen extends StatefulWidget {
   const HabitsScreen({super.key, this.initialTab = 0});
   final int initialTab;
@@ -29,10 +25,9 @@ class _HabitsScreenState extends State<HabitsScreen> {
   Widget build(BuildContext context) {
     final scope = AppScope.of(context);
     final t = Theme.of(context).textTheme;
-    final nutrition = scope.habits.settings.nutritionEnabled;
     return DefaultTabController(
-      length: nutrition ? 3 : 2,
-      initialIndex: widget.initialTab.clamp(0, nutrition ? 2 : 1),
+      length: 2,
+      initialIndex: widget.initialTab.clamp(0, 1),
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Hábitos'),
@@ -40,7 +35,6 @@ class _HabitsScreenState extends State<HabitsScreen> {
             labelStyle: t.titleSmall?.copyWith(fontWeight: FontWeight.w800),
             tabs: [
               const Tab(text: '💧 Agua'),
-              if (nutrition) const Tab(text: '🍽️ Comidas'),
               const Tab(text: '✨ Hábitos'),
             ],
           ),
@@ -77,7 +71,6 @@ class _HabitsScreenState extends State<HabitsScreen> {
                 builder: (context, _) => TabBarView(
                   children: [
                     _WaterTab(day: _day),
-                    if (nutrition) _MealsTab(day: _day),
                     _HabitsTab(day: _day),
                   ],
                 ),
@@ -213,134 +206,6 @@ class _WaterTab extends StatelessWidget {
   }
 }
 
-// ---------------------------------------------------------------- COMIDAS
-
-class _MealsTab extends StatelessWidget {
-  const _MealsTab({required this.day});
-  final DateTime day;
-
-  @override
-  Widget build(BuildContext context) {
-    final h = AppScope.of(context).habits;
-    final t = Theme.of(context).textTheme;
-    final s = h.settings;
-    final meals = h.mealsOn(day);
-    final kcal = h.kcalOn(day);
-    final protein = h.proteinOn(day);
-    final portions = h.portionsOn(day);
-
-    Widget bar(String label, int value, int target, String unit) => Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Text(label, style: t.titleSmall),
-                const Spacer(),
-                Text('$value / $target $unit', style: t.labelLarge?.copyWith(color: FmColors.primary)),
-              ],
-            ),
-            const SizedBox(height: 6),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(6),
-              child: LinearProgressIndicator(
-                value: target == 0 ? 0 : (value / target).clamp(0.0, 1.0),
-                minHeight: 8,
-                backgroundColor: FmColors.line,
-              ),
-            ),
-          ],
-        );
-
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      floatingActionButton: FloatingActionButton.extended(
-        heroTag: 'meal',
-        onPressed: () => showMealSheet(context, day: day),
-        icon: const Icon(Icons.add_rounded),
-        label: const Text('Añadir comida'),
-      ),
-      body: ListView(
-        padding: const EdgeInsets.fromLTRB(20, 8, 20, 100),
-        children: [
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: [
-                  bar('Proteína', protein, s.proteinTarget, 'g'),
-                  const SizedBox(height: 14),
-                  bar('Calorías aprox.', kcal, s.kcalTarget, 'kcal'),
-                  if (!portions.isEmpty) ...[
-                    const SizedBox(height: 14),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        for (final p in HandPortion.values)
-                          Column(
-                            children: [
-                              Text(p.emoji, style: const TextStyle(fontSize: 22)),
-                              Text(HandPortions.amount(portions[p]), style: t.titleMedium?.copyWith(color: FmColors.primary)),
-                              Text(p.label, style: t.labelSmall?.copyWith(color: FmColors.muted)),
-                            ],
-                          ),
-                      ],
-                    ),
-                  ],
-                ],
-              ),
-            ),
-          ),
-          Align(
-            alignment: Alignment.centerRight,
-            child: TextButton.icon(
-              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const MealPhotoDiary())),
-              icon: const Icon(Icons.photo_library_outlined),
-              label: const Text('Diario de fotos'),
-            ),
-          ),
-          Text(
-            'Objetivos orientativos y configurables en Perfil. No son una pauta médica: escucha a tu cuerpo.',
-            style: t.bodySmall?.copyWith(color: FmColors.muted),
-          ),
-          if (meals.isEmpty) ...[
-            const SizedBox(height: 14),
-            const HandGuideCard(),
-          ],
-          for (final type in MealType.values)
-            if (meals.any((m) => m.type == type)) ...[
-              SectionTitle('${type.emoji}  ${type.label}'),
-              for (final m in meals.where((m) => m.type == type))
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: Card(
-                    child: ListTile(
-                      leading: m.photoId == null
-                          ? null
-                          : ClipRRect(
-                              borderRadius: BorderRadius.circular(10),
-                              child: SizedBox(width: 52, height: 52, child: ProgressPhoto(photoId: m.photoId!)),
-                            ),
-                      title: Text(m.description),
-                      subtitle: Text([
-                        '${m.at.hour.toString().padLeft(2, '0')}:${m.at.minute.toString().padLeft(2, '0')}',
-                        if (m.portions != null) m.portions!.short,
-                        if (m.kcal != null) '${m.portions != null ? '≈' : ''}${m.kcal} kcal',
-                        if (m.protein != null) '${m.portions != null ? '≈' : ''}${m.protein} g proteína',
-                      ].join(' · ')),
-                      trailing: const Icon(Icons.edit_outlined, size: 20),
-                      onTap: () => showMealSheet(context, day: day, existing: m),
-                    ),
-                  ),
-                ),
-            ],
-        ],
-      ),
-    );
-  }
-}
-
-// ---------------------------------------------------------------- HÁBITOS
-
 class _HabitsTab extends StatelessWidget {
   const _HabitsTab({required this.day});
   final DateTime day;
@@ -474,58 +339,5 @@ class _ManageHabitsScreen extends StatelessWidget {
         active: existing?.active ?? true,
       ));
     }
-  }
-}
-
-
-/// Explica el método de la mano para quien no pesa la comida.
-class HandGuideCard extends StatelessWidget {
-  const HandGuideCard({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final t = Theme.of(context).textTheme;
-    return Card(
-      color: FmColors.lavender,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('¿No pesas tu comida? ¡Perfecto! 🙌', style: t.titleMedium?.copyWith(color: FmColors.ink)),
-            const SizedBox(height: 4),
-            Text(
-              'Usa tu mano como medida: siempre la llevas contigo y es proporcional a tu cuerpo.',
-              style: t.bodyMedium?.copyWith(color: FmColors.ink),
-            ),
-            const SizedBox(height: 12),
-            for (final p in HandPortion.values)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 6),
-                child: Row(
-                  children: [
-                    Text(p.emoji, style: const TextStyle(fontSize: 22)),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Text.rich(
-                        TextSpan(children: [
-                          TextSpan(text: '1 ${p.unit} = ', style: const TextStyle(fontWeight: FontWeight.w800)),
-                          TextSpan(text: p.label.toLowerCase()),
-                        ]),
-                        style: t.bodyMedium?.copyWith(color: FmColors.ink),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            const SizedBox(height: 4),
-            Text(
-              'Toca "Añadir comida" y cuenta las porciones de tu plato. La app calcula una idea aproximada de proteína y calorías.',
-              style: t.bodySmall?.copyWith(color: FmColors.ink),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 }

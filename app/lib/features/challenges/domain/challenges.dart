@@ -12,11 +12,7 @@ class ChallengeInput {
     this.water = const {},
     this.morning = const {},
     this.checkins = const {},
-    this.steps = const {},
-    this.meals = const {},
     this.allHabits = const {},
-    this.stepsAvailable = false,
-    this.mealsEnabled = true,
     this.hasHabits = false,
   });
 
@@ -24,16 +20,12 @@ class ChallengeInput {
   final Set<DateTime> water;
   final Set<DateTime> morning;
   final Set<DateTime> checkins;
-  final Set<DateTime> steps;
-  final Set<DateTime> meals;
   final Set<DateTime> allHabits;
-  final bool stepsAvailable;
-  final bool mealsEnabled;
   final bool hasHabits;
 
   /// La fecha más antigua con algún dato (para no contar semanas vacías de antes de usar la app).
   DateTime? get firstDay {
-    final all = [...trained, ...water, ...morning, ...checkins, ...steps, ...meals];
+    final all = [...trained, ...water, ...morning, ...checkins];
     if (all.isEmpty) return null;
     return all.reduce((a, b) => a.isBefore(b) ? a : b);
   }
@@ -44,8 +36,6 @@ enum ChallengeKind {
   agua('Cumple tu meta de agua 5 días', '💧', 5),
   matutina('Haz 3 rutinas matutinas', '🌅', 3),
   registro('Haz tu registro diario 5 días', '🎭', 5),
-  pasos('Llega a tu meta de pasos 4 días', '👟', 4),
-  comidas('Apunta tus comidas 5 días', '🍽️', 5),
   habitos('Cumple todos tus hábitos 3 días', '✨', 3);
 
   const ChallengeKind(this.title, this.emoji, this.target);
@@ -58,14 +48,10 @@ enum ChallengeKind {
         ChallengeKind.agua => i.water,
         ChallengeKind.matutina => i.morning,
         ChallengeKind.registro => i.checkins,
-        ChallengeKind.pasos => i.steps,
-        ChallengeKind.comidas => i.meals,
         ChallengeKind.habitos => i.allHabits,
       };
 
   bool available(ChallengeInput i) => switch (this) {
-        ChallengeKind.pasos => i.stepsAvailable,
-        ChallengeKind.comidas => i.mealsEnabled,
         ChallengeKind.habitos => i.hasHabits,
         _ => true,
       };

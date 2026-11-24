@@ -10,9 +10,6 @@ import '../../core/utils/format.dart';
 import '../../shared/widgets/pet_avatar.dart';
 import '../challenges/domain/challenges.dart';
 import '../morning/morning_log.dart';
-import '../sleep/domain/sleep_estimate.dart';
-import '../sleep/sleep_service.dart';
-import '../steps/steps_log.dart';
 
 const _monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
 
@@ -28,7 +25,6 @@ class MonthStats {
     required this.sets,
     required this.mornings,
     required this.waterDays,
-    required this.steps,
     required this.checkins,
     required this.moodAvg,
     required this.perfectWeeks,
@@ -40,7 +36,6 @@ class MonthStats {
   final int sets;
   final int mornings;
   final int waterDays;
-  final int steps;
   final int checkins;
   final double? moodAvg;
   final int perfectWeeks;
@@ -80,7 +75,6 @@ MonthStats monthStats(BuildContext context, DateTime month) {
     sets: sessions.fold(0, (a, x) => a + x.completedSets),
     mornings: MorningLog.days(s.store).where(inMonth).length,
     waterDays: s.habits.waterGoalDays.where(inMonth).length,
-    steps: StepsLog.all(s.store).entries.where((e) => inMonth(DateTime.parse(e.key))).fold(0, (a, e) => a + e.value),
     checkins: checks.length,
     moodAvg: checks.isEmpty ? null : checks.fold<int>(0, (a, c) => a + c.mood) / checks.length,
     perfectWeeks: perfect,
@@ -100,30 +94,12 @@ class MonthSummaryScreen extends StatefulWidget {
 class _MonthSummaryScreenState extends State<MonthSummaryScreen> {
   late DateTime _month = defaultSummaryMonth(DateTime.now());
   final _card = GlobalKey();
-  Duration? _rest;
   bool _sharing = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadRest();
-  }
-
-  Future<void> _loadRest() async {
-    final nights = await SleepService.nights(days: 40);
-    if (!mounted || nights == null) return;
-    final m = nights.where((n) => n.morning.year == _month.year && n.morning.month == _month.month).toList();
-    setState(() => _rest = m.isEmpty ? null : RestSummary(m).average);
-  }
 
   void _shift(int delta) {
     final next = DateTime(_month.year, _month.month + delta);
     if (next.isAfter(DateTime.now())) return;
-    setState(() {
-      _month = next;
-      _rest = null;
-    });
-    _loadRest();
+    setState(() => _month = next);
   }
 
   Future<void> _share() async {
@@ -168,7 +144,7 @@ class _MonthSummaryScreenState extends State<MonthSummaryScreen> {
             ],
           ),
           const SizedBox(height: 8),
-          RepaintBoundary(key: _card, child: MonthCard(month: _month, stats: monthStats(context, _month), rest: _rest)),
+          RepaintBoundary(key: _card, child: MonthCard(month: _month, stats: monthStats(context, _month))),
           const SizedBox(height: 16),
           FilledButton.icon(
             style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(52)),
@@ -189,10 +165,9 @@ class _MonthSummaryScreenState extends State<MonthSummaryScreen> {
 }
 
 class MonthCard extends StatelessWidget {
-  const MonthCard({super.key, required this.month, required this.stats, this.rest});
+  const MonthCard({super.key, required this.month, required this.stats});
   final DateTime month;
   final MonthStats stats;
-  final Duration? rest;
 
   @override
   Widget build(BuildContext context) {
@@ -204,8 +179,6 @@ class MonthCard extends StatelessWidget {
       ('🔥', '${s.bestStreak}', 'días seguidos'),
       if (s.mornings > 0) ('🌅', '${s.mornings}', s.mornings == 1 ? 'mañana hipopresiva' : 'mañanas hipopresivas'),
       if (s.waterDays > 0) ('💧', '${s.waterDays}', 'días con meta de agua'),
-      if (s.steps > 0) ('👟', _thousands(s.steps), 'pasos'),
-      if (rest != null) ('🌙', formatHm(rest!), 'de descanso medio'),
       if (s.moodAvg != null) (_face(s.moodAvg!), s.moodAvg!.toStringAsFixed(1).replaceAll('.', ','), 'ánimo medio'),
       if (s.challenges > 0) ('🏆', '${s.challenges}', s.challenges == 1 ? 'reto cumplido' : 'retos cumplidos'),
     ];
@@ -298,6 +271,5 @@ class MonthCard extends StatelessWidget {
     );
   }
 
-  static String _thousands(int n) => n.toString().replaceAllMapped(RegExp(r'(\d)(?=(\d{3})+$)'), (m) => '${m[1]}.');
   static String _face(double v) => const ['😞', '😕', '😐', '🙂', '😄'][(v.round() - 1).clamp(0, 4)];
 }

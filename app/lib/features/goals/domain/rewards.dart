@@ -23,7 +23,6 @@ class RewardsInput {
     required this.now,
     this.waterGoalDays = const {},
     this.allHabitsDays = const {},
-    this.stepGoalDays = const {},
     this.morningDays = const {},
     this.challengesCompleted = 0,
   });
@@ -39,7 +38,6 @@ class RewardsInput {
   /// Días (solo fecha) en los que se cumplió la meta de agua / todos los hábitos.
   final Set<DateTime> waterGoalDays;
   final Set<DateTime> allHabitsDays;
-  final Set<DateTime> stepGoalDays;
   final Set<DateTime> morningDays;
 
   /// Retos semanales cumplidos en total.
@@ -61,7 +59,6 @@ abstract final class PointRules {
   static const goal = 100;
   static const waterDay = 5;
   static const habitsDay = 5;
-  static const stepsDay = 5;
   static const morning = 10;
   static const challenge = 40;
   static const streakMilestones = {3: 30, 7: 70, 14: 150, 30: 300, 60: 600};
@@ -88,9 +85,6 @@ List<PointsEntry> earnedPoints(RewardsInput i) {
   }
   for (final _ in i.allHabitsDays) {
     out.add(const PointsEntry('Todos los hábitos del día', PointRules.habitsDay));
-  }
-  for (final _ in i.stepGoalDays) {
-    out.add(const PointsEntry('Meta de pasos del día', PointRules.stepsDay));
   }
   for (final _ in i.morningDays) {
     out.add(const PointsEntry('Rutina matutina', PointRules.morning));

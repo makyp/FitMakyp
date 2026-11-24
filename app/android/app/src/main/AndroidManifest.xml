@@ -8,10 +8,6 @@
     <!-- Cámara con guía para las fotos de progreso. Sin micrófono: solo se toman fotos. -->
     <uses-permission android:name="android.permission.CAMERA"/>
     <uses-permission android:name="android.permission.RECORD_AUDIO" tools:node="remove"/>
-    <!-- Solo para estimar el descanso (horas de uso del teléfono). Se activa a mano en Ajustes. -->
-    <!-- Podómetro: contar pasos (se pide al activarlo). -->
-    <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION"/>
-    <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS" tools:ignore="ProtectedPermissions"/>
     <application
         android:label="FitMakyp"
         android:name="${applicationName}"

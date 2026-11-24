@@ -17,7 +17,6 @@ import 'package:fitmakyp/features/pet/domain/pet_items.dart';
 import 'package:fitmakyp/features/pet/state/pet_repository.dart';
 import 'package:fitmakyp/features/plans/state/plan_repository.dart';
 import 'package:fitmakyp/features/settings/state/settings_repository.dart';
-import 'package:fitmakyp/features/steps/steps_log.dart';
 import 'package:fitmakyp/features/summary/month_summary_screen.dart';
 import 'package:fitmakyp/features/workout/state/workout_controller.dart';
 import 'package:flutter/material.dart';
@@ -43,7 +42,6 @@ void main() {
       expect(w, hasLength(3));
       expect(w.first, ChallengeKind.entrenar);
       expect(w.toSet(), hasLength(3));
-      expect(w, isNot(contains(ChallengeKind.pasos)), reason: 'sin podómetro no hay reto de pasos');
     });
 
     test('progreso de la semana', () {
@@ -61,7 +59,7 @@ void main() {
     });
   });
 
-  test('puntos nuevos: pasos, rutina matutina y retos', () {
+  test('puntos nuevos: rutina matutina y retos', () {
     final base = RewardsInput(sessions: const [], records: const [], checkins: const [], goals: const [], currentStreak: 0, bestStreak: 0, now: d(11, 13));
     final more = RewardsInput(
       sessions: const [],
@@ -71,12 +69,11 @@ void main() {
       currentStreak: 0,
       bestStreak: 0,
       now: d(11, 13),
-      stepGoalDays: {d(11, 1), d(11, 2)},
       morningDays: {d(11, 3)},
       challengesCompleted: 2,
     );
     expect(totalEarned(more) - totalEarned(base),
-        2 * PointRules.stepsDay + PointRules.morning + 2 * PointRules.challenge);
+        PointRules.morning + 2 * PointRules.challenge);
   });
 
   test('ánimo: serie semanal y entreno vs descanso', () {
@@ -93,10 +90,6 @@ void main() {
     final cmp = moodWithAndWithoutTraining(c, {d(11, 2), d(11, 4)});
     expect(cmp, (4.5, 3.0));
     expect(bestWeekday(c, min: 1), DateTime.wednesday);
-  });
-
-  test('pasos: se queda el mayor por día', () {
-    expect(StepsLog.merge({'2026-11-12': 5000}, {'2026-11-12': 4000, '2026-11-13': 120}), {'2026-11-12': 5000, '2026-11-13': 120});
   });
 
   test('aviso 2 días antes de la regla, a las 9', () {

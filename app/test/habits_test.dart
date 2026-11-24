@@ -27,7 +27,7 @@ void main() {
     expect(evaluationReminderAt(nextEvaluation: DateTime(2026, 11, 16), now: now, enabled: false), isNull);
   });
 
-  test('agua, comidas y hábitos se guardan y dan puntos', () async {
+  test('agua y hábitos se guardan y dan puntos', () async {
     SharedPreferences.setMockInitialValues({});
     final store = await LocalStore.open();
     final h = HabitsRepository(store);
@@ -42,11 +42,6 @@ void main() {
       await h.addGlass(day);
     }
 
-    await h.saveMeal(at: day, type: MealType.desayuno, description: 'Avena', kcal: 350, protein: 15);
-    await h.saveMeal(at: day.add(const Duration(hours: 4)), type: MealType.almuerzo, description: 'Pollo', protein: 40);
-    expect(h.proteinOn(day), 55);
-    expect(h.kcalOn(day), 350);
-
     for (final x in h.activeHabits) {
       await h.toggleHabit(x.id, day);
     }
@@ -55,7 +50,6 @@ void main() {
     // Se recargan desde el almacenamiento.
     final h2 = HabitsRepository(store);
     expect(h2.glasses(day), 8);
-    expect(h2.mealsOn(day).length, 2);
 
     final pts = totalEarned(RewardsInput(
       sessions: const [],

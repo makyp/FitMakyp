@@ -17,7 +17,6 @@ InsightsData insightsData(AppScope s) => InsightsData(
       waterGoal: s.habits.settings.waterGoalGlasses,
       habitsDone: (d) => s.habits.activeHabits.where((h) => s.habits.isDone(h.id, d)).length,
       habitsCount: s.habits.activeHabits.length,
-      meals: s.habits.mealsOn,
     );
 
 const _moods = ['😞', '😕', '😐', '🙂', '😄'];
@@ -240,12 +239,6 @@ class _DayCard extends StatelessWidget {
                   '${c.comment.isEmpty ? '' : '\n“${c.comment}”'}'),
             if (d.glasses > 0) line('💧', '${d.glasses} de $waterGoal vasos${d.glasses >= waterGoal ? ' ✓' : ''}'),
             if (d.habitsDone > 0) line('✨', '${d.habitsDone} de $habitsCount hábitos'),
-            if (d.meals.isNotEmpty)
-              line('🍽️', [
-                '${d.meals.length} ${d.meals.length == 1 ? 'comida' : 'comidas'}',
-                if (d.protein > 0) '${d.protein} g proteína',
-                if (d.kcal > 0) '${d.kcal} kcal',
-              ].join(' · ')),
             if (d.record != null)
               line('📏', [
                 if (d.record!.values[Measure.peso] != null) '${d.record!.values[Measure.peso]} kg',

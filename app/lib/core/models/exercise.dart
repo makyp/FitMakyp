@@ -38,6 +38,8 @@ enum Equipment {
   banda('Banda elástica'),
   esterilla('Esterilla'),
   cuerda('Cuerda para saltar'),
+  saco('Saco de boxeo'),
+  guantes('Guantes y vendas'),
   maquinaCardio('Máquina de cardio');
 
   const Equipment(this.label);
@@ -55,6 +57,9 @@ enum MediaKind {
 
   /// Una sola posición que se mantiene (planchas, isométricos).
   holdImage,
+
+  /// Ilustración dibujada en código (src y endSrc = `figure:postura`); se anima entre las dos.
+  figure,
   gif,
   video,
   none,

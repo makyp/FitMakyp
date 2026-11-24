@@ -11,10 +11,11 @@ App móvil hecha con Flutter (Android, con versión web de demostración). Todos
 
 **Entrenamiento**
 - Bienvenida guiada: crea una rutina inicial según días por semana, lugar (mancuernas o en casa), nivel y objetivo.
-- Rutina semanal editable, biblioteca de 59 ejercicios con fotos animadas de inicio y final.
+- Rutina semanal editable, biblioteca de 67 ejercicios con fotos o ilustraciones animadas de inicio y final.
 - Sesión guiada con series, descansos con cuenta atrás, sonidos y avisos por voz.
 - Calentamiento y estiramientos automáticos según los músculos del día ("Ya calenté" / "Omitir").
-- Rutina matutina de **hipopresivos** de pie, guiada respiración a respiración con figura animada.
+- Rutina matutina de **hipopresivos** de pie, guiada respiración a respiración con ilustración animada.
+- **Boxeo para principiantes** con saco y pesas: 8 golpes y defensas ilustrados, rondas de 2 minutos y dos sesiones que se agregan a la semana.
 - Rutinas con IA gratis ("copiar y pegar" en ChatGPT, Gemini o Claude; sin enviar datos personales).
 - Récords, fuerza estimada y reporte PDF para el entrenador (fotos opcionales y desactivadas por defecto).
 
@@ -22,13 +23,11 @@ App móvil hecha con Flutter (Android, con versión web de demostración). Todos
 - Peso, medidas, estatura e IMC orientativo; silueta que cambia con tus medidas.
 - Fotos de progreso con **cámara guiada** (silueta y foto anterior en transparencia) y comparador.
 - Registro diario de ánimo, energía y descanso, con gráfica en el tiempo.
-- Descanso estimado por el uso del teléfono por la noche y "primera activación" de la mañana.
 - Seguimiento opcional del ciclo menstrual (fases, síntomas, aviso antes de la regla).
 - Tarjeta "Mi mes" para guardar o compartir.
 
 **Hábitos**
-- Agua con recordatorios, hábitos personalizados y comidas **"con tu mano"** (sin pesar nada), con foto del plato.
-- Pasos con el podómetro del teléfono.
+- Agua con recordatorios (también desde el widget) y hábitos personalizados.
 
 **Motivación**
 - Mascota con nivel, tienda de ropa y accesorios, y acciones (bailar, entrenar, voltereta…).
@@ -41,7 +40,7 @@ App móvil hecha con Flutter (Android, con versión web de demostración). Todos
 - Todo se guarda en el dispositivo. Las fotos nunca salen del teléfono salvo que la persona las comparta.
 - El ciclo, las fotos, el peso y las medidas **no** se incluyen en lo que se copia para la IA.
 - Copia de seguridad manual (archivo `.json`) desde Perfil.
-- IMC, calorías, descanso y ciclo son **orientativos**: la app no da diagnósticos médicos.
+- IMC y ciclo son **orientativos**: la app no da diagnósticos médicos.
 
 ## 📲 Instalar (Android)
 
@@ -64,7 +63,7 @@ Todo se ejecuta dentro de la carpeta `app`:
 |---|---|
 | Ejecutar en un Android conectado o emulador | `flutter run` |
 | Ejecutar en el navegador | `flutter run -d chrome` |
-| Pruebas automáticas (99) | `flutter test` |
+| Pruebas automáticas (95) | `flutter test` |
 | Análisis del código | `flutter analyze` |
 | APK ligero por tipo de teléfono | `flutter build apk --release --split-per-abi` |
 | Versión web | `flutter build web --release` |
@@ -78,18 +77,18 @@ app/
     core/          modelos, datos iniciales (ejercicios y rutinas), almacenamiento, notificaciones, tema
     features/      una carpeta por función:
                    workout, plans, library, history, evolution, goals, pet, habits, morning,
-                   sleep, cycle, steps, challenges, summary, report, onboarding, home_widgets…
+                   boxing, cycle, challenges, summary, report, onboarding, home_widgets…
     shared/        widgets comunes (mascota, gráficas, fotos)
-  android/         incluye los widgets de inicio, el podómetro y el acceso al uso (Kotlin)
+  android/         incluye los widgets de inicio (Kotlin)
   assets/          fotos de ejercicios y calentamiento, sonidos
   test/            pruebas automáticas
   tool/            scripts para procesar imágenes e iconos
 ```
 
-La lógica importante (máquina de estados del entrenamiento, puntos, retos, ciclo, descanso, porciones…)
+La lógica importante (máquina de estados del entrenamiento, puntos, retos, ciclo, boxeo…)
 es Dart puro en las carpetas `domain/` y tiene pruebas.
 
 ## 🙏 Créditos
 
 - Fotos de ejercicios: [Free Exercise DB](https://github.com/yuhonas/free-exercise-db) (dominio público, Unlicense).
-- Mascota, figuras, siluetas e iconos: dibujados en código para esta app.
+- Mascota, ilustraciones de hipopresivos y boxeo, siluetas e iconos: dibujados en código para esta app.

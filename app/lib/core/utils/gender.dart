@@ -16,6 +16,8 @@ const _toMasculine = {
   'estés cómoda': 'estés cómodo',
   '¿Lista?': '¿Listo?',
   'Hidratada': 'Hidratado',
+  'zurda': 'zurdo',
+  'rígida': 'rígido',
   'campeona': 'campeón',
   'Campeona': 'Campeón',
   'heroína': 'héroe',

@@ -2,7 +2,6 @@
 library;
 
 import '../../../core/models/body.dart';
-import '../../../core/models/habits.dart';
 import '../../../core/models/session.dart';
 import '../../../core/utils/format.dart';
 
@@ -16,7 +15,6 @@ class InsightsData {
     required this.waterGoal,
     required this.habitsDone,
     required this.habitsCount,
-    required this.meals,
   });
 
   final List<WorkoutSession> sessions;
@@ -26,7 +24,6 @@ class InsightsData {
   final int waterGoal;
   final int Function(DateTime day) habitsDone;
   final int habitsCount;
-  final List<MealEntry> Function(DateTime day) meals;
 }
 
 DateTime mondayOf(DateTime d) {
@@ -41,7 +38,6 @@ class DayInsight {
     required this.checkin,
     required this.glasses,
     required this.habitsDone,
-    required this.meals,
     required this.record,
   });
 
@@ -50,14 +46,11 @@ class DayInsight {
   final DailyCheckin? checkin;
   final int glasses;
   final int habitsDone;
-  final List<MealEntry> meals;
   final ProgressRecord? record;
 
   bool get trained => sessions.any((s) => s.completedSets > 0);
-  int get protein => meals.fold(0, (a, m) => a + (m.protein ?? 0));
-  int get kcal => meals.fold(0, (a, m) => a + (m.kcal ?? 0));
   bool get isEmpty =>
-      sessions.isEmpty && checkin == null && glasses == 0 && habitsDone == 0 && meals.isEmpty && record == null;
+      sessions.isEmpty && checkin == null && glasses == 0 && habitsDone == 0 && record == null;
 }
 
 class WeekSummary {
@@ -106,7 +99,6 @@ WeekSummary weekSummary(InsightsData data, DateTime anyDayInWeek) {
           checkin: data.checkins.where((c) => dateOnly(c.date) == day).firstOrNull,
           glasses: data.glasses(day),
           habitsDone: data.habitsDone(day),
-          meals: data.meals(day),
           record: data.records.where((r) => dateOnly(r.date) == day).firstOrNull,
         );
       }(),

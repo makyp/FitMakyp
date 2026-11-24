@@ -5,7 +5,6 @@ import 'package:pdf/widgets.dart' as pw;
 
 import '../../core/utils/format.dart';
 import '../workout/domain/strength.dart';
-import '../sleep/domain/sleep_estimate.dart';
 import 'report_data.dart';
 
 const _primary = PdfColor.fromInt(0xFF7041B8);
@@ -30,11 +29,10 @@ class ReportPhoto {
   final Uint8List bytes;
 }
 
-/// [rest]: noches estimadas por el uso del teléfono; [mornings]: rutinas matutinas del periodo.
+/// [mornings]: rutinas matutinas del periodo.
 Future<Uint8List> renderReportPdf(
   ReportData d, {
   List<ReportPhoto> photos = const [],
-  RestSummary? rest,
   int mornings = 0,
 }) async {
   final doc = pw.Document(title: 'Reporte FitMakyp', author: 'FitMakyp');
@@ -201,15 +199,6 @@ Future<Uint8List> renderReportPdf(
             'Promedio de ${d.checkins} ${d.checkins == 1 ? 'registro diario' : 'registros diarios'} (escala 1 a 5): ánimo ${_n(d.moodAvg!)}, energía ${_n(d.energyAvg!)}, sueño ${_n(d.sleepAvg!)}.',
             style: const pw.TextStyle(fontSize: 9, color: _deep),
           ),
-        if (rest != null && !rest.isEmpty) ...[
-          pw.SizedBox(height: 4),
-          pw.Text(
-            'Descanso estimado (${rest.nights.length} ${rest.nights.length == 1 ? 'noche' : 'noches'} con datos): '
-            '${formatHm(rest.average)} sin usar el teléfono de media; primera activación hacia las '
-            '${formatClockMinutes(rest.averageWake!)}, último uso hacia las ${formatClockMinutes(rest.averageLastUse!)}.',
-            style: const pw.TextStyle(fontSize: 9, color: _deep),
-          ),
-        ],
         if (mornings > 0) ...[
           pw.SizedBox(height: 4),
           pw.Text(

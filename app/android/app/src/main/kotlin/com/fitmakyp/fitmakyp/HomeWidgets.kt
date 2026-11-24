@@ -61,16 +61,6 @@ private val dayNames = arrayOf("LUNES", "MARTES", "MIÉRCOLES", "JUEVES", "VIERN
 
 /** Widget "Mi día": entreno de hoy, agua y racha. */
 class DayWidgetProvider : HomeWidgetProvider() {
-    /** Cada actualización periódica también lee el podómetro y vuelve a pintar con los pasos. */
-    override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
-        super.onUpdate(context, appWidgetManager, appWidgetIds)
-        if (!StepCounter.hasSensor(context) || !StepCounter.hasPermission(context)) return
-        val pending = try { goAsync() } catch (e: Exception) { null }
-        StepCounter.read(context) { ok ->
-            if (ok) onUpdate(context, appWidgetManager, appWidgetIds, HomeWidgetPlugin.getData(context))
-            pending?.finish()
-        }
-    }
 
     /** "+💧" en el widget: suma un vaso al momento, sin abrir la app. */
     override fun onReceive(context: Context, intent: Intent) {
@@ -111,11 +101,7 @@ class DayWidgetProvider : HomeWidgetProvider() {
                     else -> "Descanso"
                 },
             )
-            val steps = StepCounter.todaySteps(context)
-            v.setTextViewText(
-                R.id.day_water,
-                if (steps > 0) "💧 ${t.glasses}/${t.goal} · 👟 ${"%,d".format(steps).replace(',', '.')}" else "💧 ${t.glasses}/${t.goal} vasos",
-            )
+            v.setTextViewText(R.id.day_water, "💧 ${t.glasses}/${t.goal} vasos")
             v.setProgressBar(R.id.day_water_bar, t.goal, t.glasses.coerceAtMost(t.goal), false)
             v.setTextViewText(R.id.day_streak, "🔥 ${t.streak}")
             v.setTextViewText(

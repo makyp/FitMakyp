@@ -1,5 +1,6 @@
 import '../models/exercise.dart';
 
+part 'seed_boxing.dart';
 part 'seed_exercises_extra.dart';
 
 /// Biblioteca inicial. Solo se usa la primera vez que se abre la app:
@@ -48,7 +49,7 @@ Exercise _ex({
       suggestedTarget: target,
     );
 
-final List<Exercise> seedExercises = [..._baseExercises, ..._extraExercises];
+final List<Exercise> seedExercises = [..._baseExercises, ..._extraExercises, ..._boxingExercises];
 
 final List<Exercise> _baseExercises = [
   // ---------- Lunes / Jueves: tren superior ----------

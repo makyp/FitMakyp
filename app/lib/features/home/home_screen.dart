@@ -8,17 +8,12 @@ import '../../shared/widgets/common.dart';
 import '../../shared/widgets/pet_avatar.dart';
 import '../goals/ui/goals_screen.dart';
 import '../habits/ui/habits_screen.dart';
-import '../habits/ui/meal_sheet.dart';
 import '../challenges/challenges_screen.dart';
 import '../challenges/domain/challenges.dart';
 import '../cycle/cycle_screen.dart';
-import '../steps/steps_log.dart';
 import '../summary/month_summary_screen.dart';
 import '../cycle/cycle_store.dart';
 import '../morning/ui/morning_screen.dart';
-import '../sleep/domain/sleep_estimate.dart';
-import '../sleep/sleep_screen.dart';
-import '../sleep/sleep_service.dart';
 import '../history/ui/week_screen.dart';
 import '../workout/ui/start_workout.dart';
 
@@ -88,17 +83,8 @@ class HomeScreen extends StatelessWidget {
                 const SizedBox(height: 12),
               ],
               const _TodayHabitsCard(),
-              if (StepsLog.supported) const _StepsCard(),
               const SizedBox(height: 12),
               const _ChallengesCard(),
-              if (AppScope.of(context).habits.settings.nutritionEnabled) ...[
-                const SizedBox(height: 12),
-                const _TodayMealsCard(),
-              ],
-              if (SleepService.supported) ...[
-                const SizedBox(height: 12),
-                const _RestCard(),
-              ],
               if (scope.settings.settings.showCycle) ...[
                 const SizedBox(height: 12),
                 const _CycleCard(),
@@ -408,82 +394,6 @@ class _TodayHabitsCard extends StatelessWidget {
 }
 
 
-/// Comidas de hoy, a la vista y con "+" para añadir rápido.
-class _TodayMealsCard extends StatelessWidget {
-  const _TodayMealsCard();
-
-  @override
-  Widget build(BuildContext context) {
-    final h = AppScope.of(context).habits;
-    final t = Theme.of(context).textTheme;
-    final now = DateTime.now();
-    final meals = h.mealsOn(now);
-    final protein = h.proteinOn(now);
-    final target = h.settings.proteinTarget;
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 14, 8, 14),
-        child: Row(
-          children: [
-            Expanded(
-              child: InkWell(
-                borderRadius: BorderRadius.circular(16),
-                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const HabitsScreen(initialTab: 1))),
-                child: Row(
-                  children: [
-                    SizedBox(
-                      width: 46,
-                      height: 46,
-                      child: Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          CircularProgressIndicator(
-                            value: target == 0 ? 0 : (protein / target).clamp(0.0, 1.0),
-                            strokeWidth: 5,
-                            backgroundColor: FmColors.line,
-                            color: const Color(0xFFE59A5C),
-                          ),
-                          const Text('🍽️', style: TextStyle(fontSize: 18)),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            meals.isEmpty
-                                ? 'Comidas de hoy'
-                                : 'Comidas: ${meals.length} ${meals.length == 1 ? 'registrada' : 'registradas'}',
-                            style: t.titleSmall,
-                          ),
-                          Text(
-                            meals.isEmpty
-                                ? 'Apúntalas con tu mano, sin pesar nada ✋'
-                                : 'Proteína ≈ $protein / $target g (orientativo)',
-                            style: t.bodySmall?.copyWith(color: FmColors.muted),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            IconButton.filledTonal(
-              tooltip: 'Añadir comida',
-              onPressed: () => showMealSheet(context, day: now),
-              icon: const Icon(Icons.add_rounded),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-
 /// Por la mañana, si aún no se hizo, invita a la rutina matutina.
 class _MorningCard extends StatefulWidget {
   const _MorningCard();
@@ -510,67 +420,6 @@ class _MorningCardState extends State<_MorningCard> {
             if (mounted) setState(() {});
           },
         ),
-      ),
-    );
-  }
-}
-
-
-/// Descanso de anoche (estimado por el uso del teléfono).
-class _RestCard extends StatefulWidget {
-  const _RestCard();
-
-  @override
-  State<_RestCard> createState() => _RestCardState();
-}
-
-class _RestCardState extends State<_RestCard> {
-  bool? _access;
-  NightRest? _last;
-
-  @override
-  void initState() {
-    super.initState();
-    _load();
-  }
-
-  Future<void> _load() async {
-    final access = await SleepService.hasAccess();
-    final nights = access ? await SleepService.nights(days: 1) : null;
-    if (!mounted) return;
-    setState(() {
-      _access = access;
-      _last = (nights == null || nights.isEmpty) ? null : nights.first;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final t = Theme.of(context).textTheme;
-    final last = _last;
-    return Card(
-      child: ListTile(
-        leading: Container(
-          width: 46,
-          height: 46,
-          alignment: Alignment.center,
-          decoration: const BoxDecoration(shape: BoxShape.circle, color: Color(0xFF2B1B43)),
-          child: const Text('🌙', style: TextStyle(fontSize: 20)),
-        ),
-        title: Text(last == null ? 'Mi descanso' : 'Anoche: ${formatHm(last.offPhone)} sin teléfono', style: t.titleSmall),
-        subtitle: Text(
-          _access == false
-              ? 'Actívalo para ver cómo descansas'
-              : last == null
-                  ? 'Aún sin datos de anoche'
-                  : '☀️ Primera activación ${formatTime(last.firstUse)} · ${last.level.label}',
-          style: t.bodySmall?.copyWith(color: FmColors.muted),
-        ),
-        trailing: const Icon(Icons.chevron_right_rounded),
-        onTap: () async {
-          await Navigator.push(context, MaterialPageRoute(builder: (_) => const SleepScreen()));
-          _load();
-        },
       ),
     );
   }
@@ -660,126 +509,6 @@ class _ChallengesCard extends StatelessWidget {
               for (final s in week) ChallengeTile(status: s, compact: true),
             ],
           ),
-        ),
-      ),
-    );
-  }
-}
-
-/// Pasos de hoy con el podómetro del teléfono.
-class _StepsCard extends StatefulWidget {
-  const _StepsCard();
-
-  @override
-  State<_StepsCard> createState() => _StepsCardState();
-}
-
-class _StepsCardState extends State<_StepsCard> {
-  ({bool sensor, bool permission})? _status;
-
-  @override
-  void initState() {
-    super.initState();
-    _load();
-  }
-
-  Future<void> _load() async {
-    final s = await StepsLog.status();
-    if (!mounted) return;
-    setState(() => _status = s);
-    if (s.permission) {
-      final scope = AppScope.of(context);
-      if (await StepsLog.sync(scope.store)) {
-        await scope.rewards.refresh();
-        if (mounted) setState(() {});
-      }
-    }
-  }
-
-  Future<void> _editGoal() async {
-    final store = AppScope.of(context).store;
-    var goal = StepsLog.goal(store).toDouble();
-    final ok = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => StatefulBuilder(
-        builder: (ctx, setD) => AlertDialog(
-          title: const Text('Meta de pasos'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text('${goal.round()} pasos al día', style: Theme.of(ctx).textTheme.titleLarge),
-              Slider(
-                value: goal,
-                min: 3000,
-                max: 15000,
-                divisions: 24,
-                onChanged: (v) => setD(() => goal = v),
-              ),
-              const Text('Orientativo: cualquier paso extra suma.'),
-            ],
-          ),
-          actions: [
-            TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancelar')),
-            FilledButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Guardar')),
-          ],
-        ),
-      ),
-    );
-    if (ok == true && mounted) {
-      await StepsLog.setGoal(store, goal.round());
-      if (mounted) {
-        await AppScope.of(context).rewards.refresh();
-        setState(() {});
-      }
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final s = _status;
-    if (s == null || !s.sensor) return const SizedBox.shrink();
-    final t = Theme.of(context).textTheme;
-    final store = AppScope.of(context).store;
-    final steps = StepsLog.on(store, DateTime.now());
-    final goal = StepsLog.goal(store);
-    final f = steps.toString().replaceAllMapped(RegExp(r'(\d)(?=(\d{3})+$)'), (m) => '${m[1]}.');
-    return Padding(
-      padding: const EdgeInsets.only(top: 12),
-      child: Card(
-        child: ListTile(
-          leading: SizedBox(
-            width: 46,
-            height: 46,
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                CircularProgressIndicator(
-                  value: s.permission ? (steps / goal).clamp(0.0, 1.0) : 0,
-                  strokeWidth: 5,
-                  backgroundColor: FmColors.line,
-                  color: const Color(0xFF3FBF9F),
-                ),
-                const Text('👟', style: TextStyle(fontSize: 18)),
-              ],
-            ),
-          ),
-          title: Text(s.permission ? '$f pasos hoy' : 'Contar mis pasos', style: t.titleSmall),
-          subtitle: Text(
-            s.permission
-                ? (steps >= goal ? '¡Meta de $goal cumplida! 🎉' : 'Meta: $goal · toca para cambiarla')
-                : 'Usa el podómetro del teléfono (suma puntos)',
-            style: t.bodySmall?.copyWith(color: FmColors.muted),
-          ),
-          trailing: s.permission
-              ? null
-              : FilledButton.tonal(
-                  onPressed: () async {
-                    await StepsLog.requestPermission();
-                    await _load();
-                  },
-                  child: const Text('Activar'),
-                ),
-          onTap: s.permission ? _editGoal : null,
         ),
       ),
     );

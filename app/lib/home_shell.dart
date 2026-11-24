@@ -10,7 +10,6 @@ import 'features/goals/ui/achievements_screen.dart';
 import 'features/goals/state/rewards_service.dart';
 import 'features/home/home_screen.dart';
 import 'features/home_widgets/home_widget_sync.dart';
-import 'features/steps/steps_log.dart';
 import 'features/pet/pet_screen.dart';
 import 'features/profile/profile_screen.dart';
 import 'features/workout/ui/workout_tab_screen.dart';
@@ -35,14 +34,6 @@ class _HomeShellState extends State<HomeShell> with WidgetsBindingObserver {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _checkWidgetLaunch();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _syncSteps());
-  }
-
-  /// Copia los pasos del podómetro y recalcula puntos y retos si cambiaron.
-  Future<void> _syncSteps() async {
-    if (!mounted) return;
-    final scope = AppScope.of(context);
-    if (await StepsLog.sync(scope.store)) await scope.rewards.refresh();
   }
 
   @override
@@ -50,7 +41,6 @@ class _HomeShellState extends State<HomeShell> with WidgetsBindingObserver {
     if (state == AppLifecycleState.resumed) {
       _checkWidgetLaunch();
       HomeWidgetSync.takeWidgetWater(AppScope.of(context).habits);
-      _syncSteps();
     }
   }
 

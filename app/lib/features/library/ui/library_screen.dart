@@ -1,3 +1,4 @@
+import '../../../shared/widgets/body_figure.dart';
 import 'package:flutter/material.dart';
 
 import '../../../app_scope.dart';
@@ -95,7 +96,9 @@ class _LibraryScreenState extends State<LibraryScreen> {
                             height: 52,
                             color: FmColors.line,
                             child: e.media.src != null
-                                ? Image.asset(e.media.src!, fit: BoxFit.cover, errorBuilder: (_, _, _) => const SizedBox())
+                                ? (e.media.kind == MediaKind.figure
+                                    ? FigureThumb(src: e.media.endSrc ?? e.media.src!)
+                                    : Image.asset(e.media.src!, fit: BoxFit.cover, errorBuilder: (_, _, _) => const SizedBox()))
                                 : const Icon(Icons.fitness_center_rounded, color: FmColors.lilac),
                           ),
                         ),

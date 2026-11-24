@@ -16,7 +16,7 @@ class BackupService {
   static const _version = 1;
 
   Future<Uint8List> buildBackup() async {
-    final photoIds = {for (final r in scope.body.records) ...r.photos.values, ...scope.habits.mealPhotoIds};
+    final photoIds = {for (final r in scope.body.records) ...r.photos.values};
     final photos = await scope.body.photos.exportAll(photoIds);
     final json = {
       'format': _format,

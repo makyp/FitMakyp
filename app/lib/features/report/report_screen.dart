@@ -1,6 +1,4 @@
 import '../morning/ui/morning_screen.dart';
-import '../sleep/domain/sleep_estimate.dart';
-import '../sleep/sleep_service.dart';
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -77,12 +75,9 @@ class _ReportScreenState extends State<ReportScreen> {
       final d = _data();
       final store = AppScope.of(context).store;
       final photos = _photos ? await _loadPhotos(d) : const <ReportPhoto>[];
-      final nights = await SleepService.nights();
-      final inPeriod = (nights ?? const <NightRest>[]).where((n) => !n.morning.isBefore(dateOnly(d.from))).toList();
       final bytes = await renderReportPdf(
         d,
         photos: photos,
-        rest: inPeriod.isEmpty ? null : RestSummary(inPeriod),
         mornings: MorningLog.countBetween(store, d.from, d.to),
       );
       final t = DateTime.now();

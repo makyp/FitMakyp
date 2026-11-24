@@ -5,8 +5,6 @@ import 'package:flutter/services.dart';
 
 import '../../../app_scope.dart';
 import '../../../core/theme/app_theme.dart';
-import '../../sleep/domain/sleep_estimate.dart';
-import '../../sleep/sleep_service.dart';
 import '../domain/hypopressive.dart';
 import '../morning_log.dart';
 
@@ -25,17 +23,6 @@ class MorningScreen extends StatefulWidget {
 
 class _MorningScreenState extends State<MorningScreen> {
   HypoLevel? _level;
-  NightRest? _night;
-
-  @override
-  void initState() {
-    super.initState();
-    SleepService.nights(days: 1).then((n) {
-      final now = DateTime.now();
-      if (!mounted || n == null || n.isEmpty) return;
-      if (n.first.morning == DateTime(now.year, now.month, now.day)) setState(() => _night = n.first);
-    });
-  }
 
 
   @override
@@ -71,13 +58,6 @@ class _MorningScreenState extends State<MorningScreen> {
                   '${hypoPostures.length} posturas, sin tumbarte. Te guío en cada respiración: inhala, exhala, saca el aire y apnea.',
                   style: t.bodyMedium?.copyWith(color: Colors.white),
                 ),
-                if (_night != null) ...[
-                  const SizedBox(height: 8),
-                  Text(
-                    '☀️ Te activaste a las ${formatTime(_night!.firstUse)} · 🌙 ${formatHm(_night!.offPhone)} sin teléfono',
-                    style: t.bodyMedium?.copyWith(color: Colors.white, fontWeight: FontWeight.w600),
-                  ),
-                ],
                 const SizedBox(height: 10),
                 Text(
                   doneToday

@@ -48,7 +48,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   int _water = 8;
   bool _reminder = true;
   int _reminderHour = 18;
-  bool _meals = true;
   bool _saving = false;
 
   @override
@@ -90,7 +89,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       workoutReminder: _reminder,
       workoutReminderHour: _reminderHour,
       workoutReminderMinute: 0,
-      nutritionEnabled: _meals,
     ));
     await s.store.writeJson(onboardedKey, true);
     widget.onDone();
@@ -369,13 +367,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               Text('$_reminderHour:00', style: t.titleMedium),
             ],
           ),
-        SwitchListTile(
-          contentPadding: EdgeInsets.zero,
-          title: const Text('Registrar comidas'),
-          subtitle: const Text('Con tu mano como medida, sin pesar nada'),
-          value: _meals,
-          onChanged: (v) => setState(() => _meals = v),
-        ),
       ]);
 
   // 4 · Privacidad
@@ -385,7 +376,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           ('📱', 'Todo se guarda solo en tu teléfono: no hay cuentas ni servidores.'),
           ('📸', 'Tus fotos de progreso nunca salen del teléfono, salvo que tú las compartas.'),
           ('💾', 'Haz una copia de seguridad de vez en cuando (Perfil → Copia de seguridad) para no perder nada si cambias de teléfono.'),
-          ('🩺', 'Las cifras (IMC, calorías, descanso, ciclo) son orientativas, no un diagnóstico. Ante cualquier duda de salud, consulta a un profesional.'),
+          ('🩺', 'Las cifras (IMC y ciclo) son orientativas, no un diagnóstico. Ante cualquier duda de salud, consulta a un profesional.'),
         ])
           Padding(
             padding: const EdgeInsets.only(bottom: 14),

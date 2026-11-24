@@ -157,7 +157,6 @@ class _PetScreenState extends State<PetScreen> {
                     _rule('Cumplir una meta', '+${PointRules.goal}'),
                     _rule('Cumplir tu meta de agua del día', '+${PointRules.waterDay}'),
                     _rule('Completar todos tus hábitos del día', '+${PointRules.habitsDay}'),
-                    _rule('Llegar a tu meta de pasos', '+${PointRules.stepsDay}'),
                     _rule('Hacer la rutina matutina', '+${PointRules.morning}'),
                     _rule('Cumplir un reto semanal', '+${PointRules.challenge}'),
                     _rule('Semana con los 3 retos', '🏆 premio'),

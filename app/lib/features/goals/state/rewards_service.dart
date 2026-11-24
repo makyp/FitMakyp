@@ -1,7 +1,6 @@
 import '../../challenges/challenge_data.dart';
 import '../../challenges/domain/challenges.dart';
 import '../../morning/morning_log.dart';
-import '../../steps/steps_log.dart';
 import 'package:flutter/foundation.dart';
 
 import '../../../core/models/body.dart';
@@ -75,14 +74,13 @@ class RewardsService extends ChangeNotifier {
   ChallengeInput get challenges => challengeInput(history: history, habits: habits, body: body, store: store);
   ChallengeSummary challengeSummary([DateTime? now]) => summarize(challenges, now ?? DateTime.now());
 
-  /// Volver a calcular (p. ej. tras leer los pasos o terminar la rutina matutina).
+  /// Volver a calcular (p. ej. tras terminar la rutina matutina).
   Future<void> refresh() => _onChange();
 
   RewardsInput input([DateTime? now]) {
     final streak = history.streak(plans.trainingWeekdays);
     final st = store;
     return RewardsInput(
-      stepGoalDays: st == null ? const {} : StepsLog.goalDays(st),
       morningDays: st == null ? const {} : MorningLog.days(st),
       challengesCompleted: challengeSummary(now).completed,
       sessions: history.sessions,
